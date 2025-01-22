@@ -5,11 +5,21 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-rl.question('set reminder for how many seconds?: ', (input) => {
-  const seconds = input;
-  
-setTimeout(() =>
-    console.log('Drink water')
-, seconds*1000);
-rl.close();
+rl.question('Set reminder for how many seconds?: ', (input) => {
+  try {
+    const seconds = parseInt(input);
+    
+    if (isNaN(seconds) || seconds <= 0) {
+      throw new Error('Please enter a valid positive integer.');
+    }
+
+    setTimeout(() => {
+      console.log('Drink water!');
+    }, seconds * 1000);
+
+    rl.close();
+  } catch (error) {
+    console.log(error.message);
+    rl.close();
+  }
 });
