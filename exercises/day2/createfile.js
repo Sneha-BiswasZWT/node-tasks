@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -29,6 +28,8 @@ rl.question('Enter file name: ', (input) => {
                 console.log(`File "${name}.txt" created:`);
                 console.log(content);
             }
+
+            fs.appendFileSync(`${name}.txt`, ' this is appended')
             rl.close();
         });
     });
