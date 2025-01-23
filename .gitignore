@@ -1,5 +1,6 @@
-# Ignore all .json files
-*.json
+
 
 # Ignore all .env files
 *.env
+
+package-lock.json

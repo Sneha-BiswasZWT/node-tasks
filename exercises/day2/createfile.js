@@ -20,17 +20,50 @@ rl.question('Enter file name: ', (input) => {
             rl.close();
             return;
         }
+        //if file exists
+        if (fs.existsSync(`${name}.txt`)){
+            rl.question("file already exists, do you want to 1. overwrite, 2. append, 3. exit\nEnter your choice (1,2,3):" , (choice) => {
+                if (choice==1) {
+                    fs.writeFile(`${name}.txt`, content, (err) => {
+                        if (err) {
+                            console.error('Error writing the file:', err);
+                        } else {
+                            console.log(`File "${name}.txt" created:`);
+                            console.log(content);
+                    }rl.close();
+                    return;})
+                    
+                }
+                else if(choice==2){
+                    fs.appendFile(`${name}.txt`, `\n${content}`, (appendErr) => {
+                        if (appendErr) {
+                            console.error('Error appending to the file:', appendErr);
+                        } else {
+                            console.log('Text appended successfully!');
+                            console.log(content);
+                        }
+                        rl.close();})
+                    }
+                else if(choice==3) {
+                    console.log("exiting");
+                    rl.close();}
+                else{
+                    console.error('enter valid choice');
+                    rl.close();
+                    return;
+                    }
+        });
 
-        fs.writeFile(`${name}.txt`, content, (err) => {
-            if (err) {
-                console.error('Error', err);
-            } else {
-                console.log(`File "${name}.txt" created:`);
-                console.log(content);
+        }else if (!fs.existsSync(`${name}.txt`)){                    
+                        fs.writeFile(`${name}.txt`, content, (err) => {
+                    if (err) {
+                        console.error('Error writing the file:', err);
+                    } else {
+                        console.log(`File "${name}.txt" created:`);
+                        console.log(content);
+                        rl.close();
+                
+                }})
             }
-
-            fs.appendFileSync(`${name}.txt`, ' this is appended')
-            rl.close();
         });
     });
-});
