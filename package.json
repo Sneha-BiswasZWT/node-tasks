@@ -15,5 +15,9 @@
     "url": "https://github.com/Sneha-BiswasZWT/node-tasks/issues"
   },
   "homepage": "https://github.com/Sneha-BiswasZWT/node-tasks#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
 }

@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 rl.question('Set reminder for how many seconds?: ', (input) => {
   try {
     const seconds = parseInt(input);
-    
+
     if (isNaN(seconds) || seconds <= 0) {
       throw new Error('Please enter a valid positive integer.');
     }
