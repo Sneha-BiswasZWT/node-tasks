@@ -5,3 +5,6 @@
 
 package-lock.json
 node_modules
+
+.\exercises\day3\middlewares\requestlogs.txt
+\exercises\day3\uploads

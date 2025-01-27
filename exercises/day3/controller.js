@@ -10,13 +10,38 @@ const agevalid = validators.validateAge;
 
 
 
-//list of all users
-function getusers(req, res) {
-    if (users.length === 0) {
-        return res.status(404).json({ message: "No users found." })
+//list of all users & custom filtering
+function getUsersfilter(req, res) {
+    console.log(req.query); 
+    const role = req?.query?.role;
+    const isActive = req?.query?.isActive;
+    const ageGt = req?.query?.ageGt;
 
+    let filteredUsers = users;
+
+    if (role) {
+        filteredUsers = filteredUsers.filter((user) => user.role.toLowerCase() === role.toLowerCase());
     }
-    else { return res.status(200).json(users); }
+
+    if (isActive) {
+        const activeFilter = isActive.toLowerCase() === "true";
+        filteredUsers = filteredUsers.filter((user) => user.isActive === activeFilter);
+    }
+
+    if (ageGt) {
+        const ageFilter = parseInt(ageGt);
+        if (!isNaN(ageFilter)) {
+            filteredUsers = filteredUsers.filter((user) => user.age > ageFilter);
+        } else {
+            return res.status(400).json({ error: "Invalid age parameter" });
+        }
+    }
+
+    if (filteredUsers.length === 0) {
+        return res.status(404).json({ message: "No users found matching the criteria." });
+    }
+
+    return res.status(200).json({ users: filteredUsers });
 }
 //list of user of particular ID
 function getusersbyId(req, res) {
@@ -81,7 +106,7 @@ function updateUser(req, res) {
     const foundUser = users.find((user) => user.id === id);
 
     if (foundUser) {
-        const updates = { name, email, age, role, isActive };
+        const updates = { name, email, age, role, isActive }; 
         for (const [key, value] of Object.entries(updates)) {
             if (value !== undefined) {
                 foundUser[key] = value;
@@ -118,43 +143,32 @@ function deleteUser(req, res) {
         user: foundUser,
     });
 }
-
-function getUsersfilter(req, res) {
-   
-    const role = req?.query?.role;
-    const isActive = req?.query?.isActive;
-    const ageGt = req?.query?.ageGt;
-    // filter the users based on query parameters
-    let filteredUsers = users;
-
-    if (role) {
-        filteredUsers = filteredUsers.filter((user) => user.role === role);
+function uploadimg(req, res) {
+    const id = parseInt(req.params.id);
+    const file = req.file;
+  
+    if (!file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
-
-    if (isActive) {
-        const activeFilter = isActive.toLowerCase() === "true"; // Convert to boolean
-        filteredUsers = filteredUsers.filter((user) => user.isActive === activeFilter);
+  
+    const index = users.findIndex((user) => user.id === id);
+  
+    if (index === -1) {
+      return res.status(404).json({ error: `User with ID ${id} not found.` });
     }
-
-    if (ageGt) {
-        const ageFilter = parseInt(ageGt);
-        if (!isNaN(ageFilter)) {
-            filteredUsers = filteredUsers.filter((user) => user.age > ageFilter);
-        } else {
-            return res.status(400).json({ error: "Invalid age parameter" });
-        }
-    }
-    
-    return res.status(200).json({ users: filteredUsers });
-}
-
-
+  
+    users[index].Image = file.path; // Save file path
+    return res.status(200).json({
+      message: "File upload successful",
+      data: { userId: id, filePath: file.path },
+    });}
 
 module.exports = {
-    getusers,
+    getUsersfilter,
     getusersbyId,
     createusers,
     updateUser,
     deleteUser,
-    getUsersfilter
+    uploadimg
+   
 };

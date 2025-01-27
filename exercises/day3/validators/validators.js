@@ -40,4 +40,6 @@ function validateRole(role){
         return false;
     }
 }
+
+
 module.exports = { validateId, validateEmail, validateAge, validateRole}
