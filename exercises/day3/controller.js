@@ -119,11 +119,42 @@ function deleteUser(req, res) {
     });
 }
 
+function getUsersfilter(req, res) {
+   
+    const role = req?.query?.role;
+    const isActive = req?.query?.isActive;
+    const ageGt = req?.query?.ageGt;
+    // filter the users based on query parameters
+    let filteredUsers = users;
+
+    if (role) {
+        filteredUsers = filteredUsers.filter((user) => user.role === role);
+    }
+
+    if (isActive) {
+        const activeFilter = isActive.toLowerCase() === "true"; // Convert to boolean
+        filteredUsers = filteredUsers.filter((user) => user.isActive === activeFilter);
+    }
+
+    if (ageGt) {
+        const ageFilter = parseInt(ageGt);
+        if (!isNaN(ageFilter)) {
+            filteredUsers = filteredUsers.filter((user) => user.age > ageFilter);
+        } else {
+            return res.status(400).json({ error: "Invalid age parameter" });
+        }
+    }
+    
+    return res.status(200).json({ users: filteredUsers });
+}
+
+
 
 module.exports = {
     getusers,
     getusersbyId,
     createusers,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUsersfilter
 };
