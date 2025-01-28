@@ -4,7 +4,7 @@ const Controller = require("../controller/UserController");
 const {fileUploader} = require("../middleware/fileUploader");
 const idValidator = require("../middleware/validators/IdValidator");
 
-
+router.get("/", Controller.home);
 router.get("/users", Controller.getUsers);
 router.get("/users/:id",idValidator, Controller.getusersbyId);
 router.post("/users", Controller.createusers);

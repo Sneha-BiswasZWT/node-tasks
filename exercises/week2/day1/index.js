@@ -6,9 +6,7 @@ app.use(express.urlencoded({extended : false}));//for form data
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.get('/', (req, res) => {
-    res.send("Welcome to the User Management API!")
-});
+
 
 
 app.use("/", apiRoutes);
