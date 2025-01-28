@@ -4,6 +4,11 @@ const con_table = require("../config/config");
 const file_upload= require("../middleware/fileUploader")
 const { createUserValidate, updateUserValidate, querySchema } = require('../middleware/validators/validators')
 
+function home(req, res){
+  return res
+  .status(200)
+  .json({ message: "Welcome to the User Management API!" });
+}
 
 // Insert a new user
 async function createusers(req, res) {
@@ -185,4 +190,5 @@ module.exports = {
   updateUser,
   deleteUser,
   uploadimg,
+  home
 };
