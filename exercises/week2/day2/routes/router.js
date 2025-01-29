@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Controller = require("../controller/userController");
-const {fileUploader} = require("../middlewares/fileUploader");
+const {imageUploader, pdfUploader} = require("../middlewares/fileUploader");
 const {userIdValidator, userProfileValidator} = require("../validators/IdValidator");
 
 //for home
@@ -10,12 +10,12 @@ router.get("/", Controller.home);
 //CRUD OPERATIONS FOR users TABLE
 router.get("/users", Controller.getUsers);
 router.get("/users/:userId",userIdValidator, Controller.getusersbyId);//join with user_images & user_profile
-router.post("/users", Controller.createusers);
-router.patch("/users/:userId",userIdValidator, Controller.updateUser);
+router.post("/users",pdfUploader, Controller.createusers);
+router.patch("/users/:userId",pdfUploader,userIdValidator, Controller.updateUser);
 router.delete("/users/:userId",userIdValidator, Controller.deleteUser);
 
 //CRUD OPERATIONS FOR user_images TABLE
-router.post("/upload-image/:userId", userIdValidator, fileUploader, Controller.uploadimg);
+router.post("/upload-image/:userId", userIdValidator, imageUploader, Controller.uploadimg);
 router.get("/user-images/:userId", userIdValidator, Controller.getimages);
 router.delete("/user-images/:userId", userIdValidator, Controller.deleteUserimage);
 
