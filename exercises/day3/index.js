@@ -4,6 +4,7 @@ const apiRoutes = require("./routes/router");
 const log = require("./middlewares/log")
 
 app.use(express.json());
+//app.use(logReq);
 app.use(log);
 app.use(express.urlencoded({extended : false}));//for form data
 app.get('/', (req,res)=>
@@ -11,7 +12,7 @@ app.get('/', (req,res)=>
     res.send("Welcome to the User Management API!")
 });
 
-//app.use(logReq);
+
 app.use("/", apiRoutes);
 
 

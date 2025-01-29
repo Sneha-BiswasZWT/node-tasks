@@ -9,6 +9,7 @@ const agevalid = validators.validateAge;
 
 
 
+
 //list of all users & custom filtering
 function getUsersfilter(req, res) {
     console.log(req.query); 
@@ -168,7 +169,6 @@ module.exports = {
     createusers,
     updateUser,
     deleteUser,
-    uploadimg,
-    
+    uploadimg
    
 };
