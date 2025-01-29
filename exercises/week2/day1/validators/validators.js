@@ -1,6 +1,6 @@
 const yup= require('yup');
 
-const createUserValidate = yup.object().shape({
+const createUserSchema = yup.object().shape({
     name: yup.string().required("name is required"),
     age: yup.number("enter a valid age").required("age is required").positive().integer().min(18).max(115),
     email: yup.string().email("Invalid email format").required("email is required"),
@@ -11,7 +11,7 @@ const createUserValidate = yup.object().shape({
   isActive: yup.boolean().nullable().default(false)
 });
 
-const updateUserValidate = yup.object().shape({
+const updateUserSchema = yup.object().shape({
     name: yup.string().optional(),
     age: yup.number("enter a valid age").positive().integer().min(18).max(115).optional(),
     email: yup.string().email("Invalid email format").optional(),
@@ -30,7 +30,7 @@ const idSchema = yup.object().shape({
   });
 
 module.exports = {
-    createUserValidate,
-    updateUserValidate,
-    idSchema
+  createUserSchema,
+  updateUserSchema,
+  idSchema
   };

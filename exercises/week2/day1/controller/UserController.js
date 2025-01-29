@@ -2,7 +2,7 @@
 const path = require("path");
 const con_table = require("../config/config");
 const file_upload= require("../middleware/fileUploader")
-const { createUserValidate, updateUserValidate, querySchema } = require('../middleware/validators/validators')
+const { createUserValidate, updateUserValidate, querySchema, updateUserSchema } = require('../validators/validators')
 
 function home(req, res){
   return res
@@ -14,7 +14,7 @@ function home(req, res){
 async function createusers(req, res) {
   try {
     // Validate the request body against the schema
-    await createUserValidate.validate(req.body, { abortEarly: false });
+    await createUserSchema.validate(req.body, { abortEarly: false });
 
     // Destructure validated fields from the request body
     const { name, email, age, role, isActive } = req.body;
@@ -90,7 +90,7 @@ async function updateUser(req, res) {
    // console.log("Request Body:", req.body);  
 
     // Validate fields using Yup schema
-    await updateUserValidate.validate(req.body, { abortEarly: false });
+    await updateUserSchema.validate(req.body, { abortEarly: false });
 
     const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null);
 

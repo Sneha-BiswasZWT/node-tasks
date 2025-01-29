@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Controller = require("../controller/UserController");
 const {fileUploader} = require("../middleware/fileUploader");
-const idValidator = require("../middleware/validators/IdValidator");
+const idValidator = require("../validators/IdValidator");
 
 router.get("/", Controller.home);
 router.get("/users", Controller.getUsers);
