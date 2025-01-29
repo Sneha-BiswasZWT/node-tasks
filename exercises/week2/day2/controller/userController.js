@@ -13,6 +13,21 @@ function home(req, res) {
 // users table section start
 // Insert a new user
 async function createusers(req, res) {
+    const file = req.file;
+    console.log(file)
+
+    // file details
+    let pdf_name = null;
+    let pdf_url = null;
+    let pdf_size = null;
+    // Check if file is uploaded
+    if (file) {
+        pdf_name = file.filename;
+        pdf_url = `/uploads/${pdf_name}`;
+        pdf_size = file.size;
+    }
+
+
     try {
         // Validate the request body against the schema
         await createUserSchema.validate(req.body, { abortEarly: false });
@@ -22,8 +37,8 @@ async function createusers(req, res) {
 
         // Insert user into the database
         const [result] = await con_table.promise().query(
-            "INSERT INTO users (name, email, age, role, isActive) VALUES (?, ?, ?, ?, ?)",
-            [name, email, age, role, isActive]
+            "INSERT INTO users (name, email, age, role, isActive, pdf_name, pdf_url, pdf_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [name, email, age, role, isActive, pdf_name, pdf_url, pdf_size]
         );
 
         res.status(201).json({
@@ -82,6 +97,7 @@ async function getusersbyId(req, res) {
 
 // Update a user
 async function updateUser(req, res) {
+    
     const { name, email, age, role, isActive } = req.body;
     const userId = req.params.userId;
     //console.log(userId);
@@ -132,6 +148,69 @@ async function updateUser(req, res) {
         return res.status(400).json({ error: "Invalid request data" });
     }
 }
+async function updateUser(req, res) {
+    const { name, email, age, role, isActive } = req.body;
+    const userId = req.params.userId;
+    const file = req.file;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required.' });
+    }
+
+    // file details
+    let pdf_name = null;
+    let pdf_url = null;
+    let pdf_size = null;
+    // Check if file is uploaded
+    if (file) {
+        pdf_name = file.filename;
+        pdf_url = `/uploads/${pdf_name}`;
+        pdf_size = file.size;
+    }
+
+    try {
+        // Validate fields using Yup schema
+        await updateUserSchema.validate(req.body, { abortEarly: false });
+
+        //fields to update
+        const updateFields = { name, email, age, role, isActive };
+
+        if (pdf_name && pdf_url && pdf_size) {
+            updateFields.pdf_name = pdf_name;
+            updateFields.pdf_url = pdf_url;
+            updateFields.pdf_size = pdf_size;
+
+        }
+
+        const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null);
+
+        if (validFields.length === 0) {
+            return res.status(403).json({ error: "No parameters entered" });
+        }
+
+        const updatedFields = validFields.map(([key]) => `${key} = ?`);
+        const values = validFields.map(([_, value]) => value);
+        values.push(userId);
+
+        const query = `UPDATE users SET ${updatedFields.join(", ")} WHERE id = ?`;
+
+        const [result] = await con_table.promise().query(query, values);
+        if (result.affectedRows > 0) {
+            return res.json({ message: "User updated successfully!" });
+        } else {
+            return res.status(404).json({ message: "User not found" });
+        }
+    } catch (err) {
+        console.log("Error during validation:", err);
+
+        if (err && err.errors && Array.isArray(err.errors)) {
+            return res.status(400).json({ error: err.errors.join(', ') });
+        }
+
+        return res.status(400).json({ error: "Invalid request data" });
+    }
+}
+
 
 // Delete a user
 async function deleteUser(req, res) {
