@@ -97,7 +97,7 @@ async function getusersbyId(req, res) {
 
 // Update a user
 async function updateUser(req, res) {
-    
+
     const { name, email, age, role, isActive } = req.body;
     const userId = req.params.userId;
     //console.log(userId);
@@ -314,11 +314,16 @@ async function deleteUserimage(req, res) {
 // user_profiles table section start
 //create user profile
 async function createuserProfile(req, res) {
-    const userId = parseInt(req.params.userId);  // Get userId from URL parameter
+    const userId =req.params.userId;  // Get userId from URL parameter
     console.log(userId)
 
     if (!userId) {
         return res.status(400).json({ error: "Please enter user ID to proceed." });
+    }
+
+    const [rows] = await con_table.promise().query("SELECT * FROM user_profiles WHERE id = ?", [userId]);
+    if (rows.length> 0) {
+        return res.status(400).json({ error: "user profile for this userId already exists." });
     }
 
     try {
