@@ -17,9 +17,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// Validate file type
-function validateFileType(file, cb) {
-  const filetypes = /jpeg|jpg|png|heic/; // Include heic file format if needed
+// Validate file type for images
+function validateFileTypeImage(file, cb) {
+  const filetypes = /jpeg|jpg|png|heic/; 
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);
   
@@ -30,17 +30,29 @@ function validateFileType(file, cb) {
   }
 }
 
-// Multer configuration
-const upload = multer({
+// Validate file type for pdfs
+function validateFileTypepdf(file, cb) {
+  const filetypes = /pdf|doc|docx|txt/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+  
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    return cb(new Error("Only pdfs/text/docs are allowed (pdf, doc, docx, txt)"), false);
+  }
+}
+// Multer configuration for images
+const uploadImage = multer({
   storage: storage,
   limits: { fileSize: 2000000 }, // 2MB file size limit
   fileFilter: function (_req, file, cb) {
-    validateFileType(file, cb);
+    validateFileTypeImage(file, cb);
   },
 }).single("Image");
 
-function fileUploader(req, res, next) {
-  upload(req, res, (err) => {
+function imageUploader(req, res, next) {
+  uploadImage(req, res, (err) => {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
@@ -48,4 +60,22 @@ function fileUploader(req, res, next) {
   });
 }
 
-module.exports = { fileUploader };
+// Multer configuration for pdfs
+const uploadPdf = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 }, // 10MB file size limit
+  fileFilter: function (_req, file, cb) {
+    validateFileTypepdf(file, cb);
+  },
+}).single("File");
+
+function pdfUploader(req, res, next) {
+  uploadPdf(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+}
+
+module.exports = { imageUploader, pdfUploader };
