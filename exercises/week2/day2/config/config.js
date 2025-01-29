@@ -59,9 +59,9 @@ con.connect(function(err) {
         // Create the 'user_profiles' table
         const userProfiles = `CREATE TABLE IF NOT EXISTS user_profiles  (
           id INT AUTO_INCREMENT PRIMARY KEY,
-          userId INT,
+          userId INT UNIQUE,
           bio TEXT,
-          linkedInUrl VARCHAR(255) NOT NULL,
+          linkedInUrl VARCHAR(255) NULL,
           facebookUrl   VARCHAR(255),
           instaUrl  VARCHAR(255),
           createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

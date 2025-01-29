@@ -34,25 +34,18 @@ const idSchema = yup.object().shape({
     .integer('ID must be an integer')
 });
 
-const createUserProfileSchema = yup.object().shape({
+const UserProfileSchema = yup.object().shape({
   bio: yup.string().optional().nullable(),
-  linkedInUrl: yup.string().matches(linkedInRegex,"Invalid LinkedIn profile URL. Example: https://www.linkedin.com/in/your-profile").required('LinkedIn profile URL is required'),
-  facebookUrl : yup.string().matches(facebookRegex,"Invalid Facebook profile URL. Example: https://www.facebook.com/your-profile").optional(),
-  instaUrl : yup.string().matches(instagramRegex,"Invalid Instagram profile URL. Example: https://www.instagram.com/your-profile").optional(),
+  linkedInUrl: yup.string().matches(linkedInRegex, "Invalid LinkedIn profile URL. Example: https://www.linkedin.com/in/your-profile").optional(),
+  facebookUrl: yup.string().matches(facebookRegex, "Invalid Facebook profile URL. Example: https://www.facebook.com/your-profile").optional(),
+  instaUrl: yup.string().matches(instagramRegex, "Invalid Instagram profile URL. Example: https://www.instagram.com/your-profile").optional(),
 });
 
-const UpdatedProfileSchema = yup.object().shape({
-  bio: yup.string().optional().nullable(),
-  linkedInUrl: yup.string().matches(linkedInRegex,"Invalid LinkedIn profile URL. Example: https://www.linkedin.com/in/your-profile").optional(),
-  facebookUrl : yup.string().matches(facebookRegex,"Invalid Facebook profile URL. Example: https://www.facebook.com/your-profile").optional(),
-  instaUrl : yup.string().matches(instagramRegex,"Invalid Instagram profile URL. Example: https://www.instagram.com/your-profile").optional(),
-});
 
 module.exports = {
   createUserSchema,
   updateUserSchema,
   idSchema,
-  createUserProfileSchema,
-  UpdatedProfileSchema
+  UserProfileSchema
 
 };

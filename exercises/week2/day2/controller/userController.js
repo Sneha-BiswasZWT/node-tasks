@@ -1,7 +1,7 @@
 
 const path = require("path");
 const con_table = require("../config/config");
-const { createUserSchema, updateUserSchema, createUserProfileSchema, UpdatedProfileSchema } = require('../validators/validators')
+const { createUserSchema, updateUserSchema, UserProfileSchema } = require('../validators/validators')
 
 function home(req, res) {
     return res
@@ -323,7 +323,7 @@ async function createuserProfile(req, res) {
 
     try {
         // Validate the request body against the schema
-        await createUserProfileSchema.validate(req.body, { abortEarly: false });
+        await UserProfileSchema.validate(req.body, { abortEarly: false });
 
         // Destructure validated fields from the request body
         const { bio, linkedInUrl, facebookUrl, instaUrl } = req.body;
@@ -389,9 +389,8 @@ async function getuserProfilebyId(req, res) {
 async function updateUserProfile(req, res) {
     const { bio, linkedInUrl, facebookUrl, instaUrl } = req.body;
     const profileId = req.params.id;
-    //console.log(userId);
 
-    // Check if the ID is not provided (undefined or empty string)
+    // Check if the ID is provided
     if (!profileId) {
         return res.status(400).json({ message: 'User ID is required.' });
     }
@@ -399,12 +398,10 @@ async function updateUserProfile(req, res) {
     const updateFields = { bio, linkedInUrl, facebookUrl, instaUrl };
 
     try {
-        // console.log("Request Body:", req.body);  
-
         // Validate fields using Yup schema
-        await UpdatedProfileSchema.validate(req.body, { abortEarly: false });
+        await UserProfileSchema.validate(req.body, { abortEarly: false });
 
-        const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null);
+        const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null && value !== "");
 
         if (validFields.length === 0) {
             return res.status(403).json({ error: "No parameters entered" });
@@ -418,23 +415,32 @@ async function updateUserProfile(req, res) {
 
         const [result] = await con_table.promise().query(query, values);
         if (result.affectedRows > 0) {
-            console.log("User_profile updated successfully!")
-            return res.json({ message: "User_profile updated successfully!" });
+            console.log("User_profile updated successfully!");
+            return res.json({
+                message: "User_profile updated successfully!",
+                updatedProfile: {
+                    bio,
+                    linkedInUrl,
+                    facebookUrl,
+                    instaUrl
+                }
+            });
         } else {
             return res.status(404).json({ message: "User_profile not found" });
         }
     } catch (err) {
         console.log("Error during validation:", err);  // Log the full error to inspect
 
-        // Safely handle the error if it has 'errors' property
+        // Handle validation errors
         if (err && err.errors && Array.isArray(err.errors)) {
-            return res.status(400).json({ error: err.errors.join(', ') });
+            return res.status(400).json({ error: `Validation failed: ${err.errors.join(', ')}` });
         }
 
-        // Fallback error if structure doesn't match
+        // Fallback error
         return res.status(400).json({ error: "Invalid request data" });
     }
 }
+
 
 // Delete a user profile
 async function deleteUserProfile(req, res) {
