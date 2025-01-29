@@ -1,8 +1,7 @@
 
 const path = require("path");
 const con_table = require("../config/config");
-const file_upload= require("../middleware/fileUploader")
-const { createUserValidate, updateUserValidate, querySchema, updateUserSchema } = require('../validators/validators')
+const { createUserSchema, updateUserSchema } = require('../validators/validators')
 
 function home(req, res){
   return res
