@@ -9,7 +9,6 @@ function home(req, res) {
         .json({ message: "Welcome to the User Management API!" });
 }
 
-
 // users table section start
 // Insert a new user
 async function createusers(req, res) {
@@ -96,58 +95,6 @@ async function getusersbyId(req, res) {
 }
 
 // Update a user
-async function updateUser(req, res) {
-
-    const { name, email, age, role, isActive } = req.body;
-    const userId = req.params.userId;
-    //console.log(userId);
-
-    // Check if the ID is not provided (undefined or empty string)
-    if (!userId) {
-        return res.status(400).json({ message: 'User ID is required.' });
-    }
-
-
-    const updateFields = { name, email, age, role, isActive };
-
-    try {
-        // console.log("Request Body:", req.body);  
-
-        // Validate fields using Yup schema
-        await updateUserSchema.validate(req.body, { abortEarly: false });
-
-        const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null);
-
-        if (validFields.length === 0) {
-            return res.status(403).json({ error: "No parameters entered" });
-        }
-
-        const updatedFields = validFields.map(([key]) => `${key} = ?`);
-        const values = validFields.map(([_, value]) => value);
-        values.push(userId);
-
-        const query = `UPDATE users SET ${updatedFields.join(", ")} WHERE id = ?`;
-
-        const [result] = await con_table.promise().query(query, values);
-        if (result.affectedRows > 0) {
-            console.log("User updated successfully!")
-            return res.json({ message: "User updated successfully!" });
-
-        } else {
-            return res.status(404).json({ message: "User not found" });
-        }
-    } catch (err) {
-        console.log("Error during validation:", err);  // Log the full error to inspect
-
-        // Safely handle the error if it has 'errors' property
-        if (err && err.errors && Array.isArray(err.errors)) {
-            return res.status(400).json({ error: err.errors.join(', ') });
-        }
-
-        // Fallback error if structure doesn't match
-        return res.status(400).json({ error: "Invalid request data" });
-    }
-}
 async function updateUser(req, res) {
     const { name, email, age, role, isActive } = req.body;
     const userId = req.params.userId;
@@ -314,7 +261,7 @@ async function deleteUserimage(req, res) {
 // user_profiles table section start
 //create user profile
 async function createuserProfile(req, res) {
-    const userId =req.params.userId;  // Get userId from URL parameter
+    const userId = req.params.userId;  // Get userId from URL parameter
     console.log(userId)
 
     if (!userId) {
@@ -322,7 +269,7 @@ async function createuserProfile(req, res) {
     }
 
     const [rows] = await con_table.promise().query("SELECT * FROM user_profiles WHERE id = ?", [userId]);
-    if (rows.length> 0) {
+    if (rows.length > 0) {
         return res.status(400).json({ error: "user profile for this userId already exists." });
     }
 
@@ -445,7 +392,6 @@ async function updateUserProfile(req, res) {
         return res.status(400).json({ error: "Invalid request data" });
     }
 }
-
 
 // Delete a user profile
 async function deleteUserProfile(req, res) {
