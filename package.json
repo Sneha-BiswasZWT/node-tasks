@@ -4,7 +4,8 @@
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "day3": "node ./exercises/day3/index.js"
+    "day3": "node ./exercises/day3/index.js",
+    "users_demo": "node ./exercises/week2/day3/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,8 @@
     "express": "^4.21.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.12.0",
+    "sequelize": "^6.37.5",
+    "sqlite3": "^5.1.7",
     "yup": "^1.6.1"
   }
 }
