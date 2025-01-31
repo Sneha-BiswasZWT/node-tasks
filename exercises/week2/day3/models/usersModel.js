@@ -34,23 +34,26 @@ const users = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        min:{
-            args: [18],
+        min: {
+          args: [18],
           msg: 'Age must be at least 18 years old.',
         },
-        max:{
-            args: [115],
+        max: {
+          args: [115],
           msg: 'Age cannot be more than 115. Unless you are kryptonian',
         },
       },
     },
     role: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false,  // Placed correctly
+      set(value) {
+        this.setDataValue('role', value.toLowerCase()); // Corrected
+      },
       validate: {
         isIn: {
-          args: [['Admin', 'User']],
-          msg: 'Invalid Role. Available roles are: "Admin", "User".',
+          args: [['admin', 'user']],
+          msg: 'Invalid Role. Available roles are: "admin", "user".',
         },
       },
     },
@@ -66,4 +69,4 @@ const users = sequelize.define(
   }
 );
 
-module.exports = {users};
+module.exports = { users };

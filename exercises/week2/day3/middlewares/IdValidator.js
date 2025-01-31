@@ -18,7 +18,7 @@ async function userIdValidator(req, res, next) {
                 id: userId,
             },
         });
-        console.log(row)
+        //console.log(row)
         if (row.length === 0) {
             return res.status(404).json({ message: 'User ID not found' });
         }
@@ -55,7 +55,7 @@ async function userProfileValidator(req, res, next) {
                 id: userId,
             },
         });
-        console.log(row)
+        //console.log(row)
         if (row.length === 0) {
             return res.status(404).json({ message: 'User profile ID not found' });
         }

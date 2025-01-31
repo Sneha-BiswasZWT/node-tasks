@@ -66,6 +66,6 @@ const user_profiles = sequelize.define(
     }
 );
 
-users.hasOne(user_profiles, { foreignKey: 'userId', onDelete: 'CASCADE' });
+users.hasMany(user_profiles, { foreignKey: 'userId', onDelete: 'CASCADE' });
 user_profiles.belongsTo(users, { foreignKey: 'userId' });
 module.exports = { user_profiles };

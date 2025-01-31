@@ -1,5 +1,7 @@
-const User = require('../models/usersModel');
+const { users } = require('../models/usersModel');
 const { user_profiles } = require('../models/userProfilesModel');
+const { user_images } = require('../models/userImagesModel');
+const path = require("path");
 
 //home fuction
 async function home(req, res) {
@@ -8,13 +10,14 @@ async function home(req, res) {
         .json({ message: "Welcome to the User Management API!" });
 }
 
+//users table
 //create new user
 async function createUser(req, res) {
     const { name, age, email, role, isActive } = req.body;
     //console.log('Form Data:', req.body);
 
     try {
-        const user = await User.create({
+        const user = await users.create({
             name,
             age,
             email,
@@ -30,7 +33,7 @@ async function createUser(req, res) {
 //get all users
 async function getUsers(req, res) {
     try {
-        const user = await User.findAll();
+        const user = await users.findAll();
         console.log('Users displayed successfully!')
         res.status(201).json({ message: 'Users displayed successfully!', user });
     } catch (error) {
@@ -41,10 +44,10 @@ async function getUsers(req, res) {
 
 //get specific user
 async function getUsersById(req, res) {
-    const userId=req.params.id;
+    const userId=req.params.userId;
 
     try {
-        const user = await User.findAll({
+        const user = await users.findOne({
             where: {
             id:userId,
           },});
@@ -58,7 +61,7 @@ async function getUsersById(req, res) {
 
 //update a user
 async function updateUser(req, res) {
-    const userId=req.params.id;
+    const userId=req.params.userId;
     const {name,age,email,role, isActive}=req.body;
 
     if (!name && !age && !email && !role && isActive === undefined) {
@@ -66,7 +69,7 @@ async function updateUser(req, res) {
     }
 
     try {
-        const [user] = await User.update(
+        const [user] = await users.update(
             { name: name,
                 age:age,
                 email:email,
@@ -79,7 +82,7 @@ async function updateUser(req, res) {
               },
             },
           );
-          const updatedUser = await User.findOne({
+          const updatedUser = await users.findOne({
             where: { id: userId },
         });
         console.log('Users updated successfully!')
@@ -91,10 +94,10 @@ async function updateUser(req, res) {
 };
 //delete a user
 async function deleteUser(req, res) {
-    const userId=req.params.id;
+    const userId=req.params.userId;
 
     try {
-        const user = await User.destroy(
+        const user = await users.destroy(
             {
               where: {
                 id:userId,
@@ -109,6 +112,7 @@ async function deleteUser(req, res) {
     }
 };
 
+//user_profile table
 //create a new user profile
 async function createUserProfile(req, res) {
     userId=req.params.userId;
@@ -185,16 +189,91 @@ async function deleteUserProfile(req, res) {
         res.status(400).json({ message: 'Error deleting user', error: error.message });
     }
 };
+
+//user_images table
+//to uplaod an image
+async function uploadImg(req, res) {
+    const userId = parseInt(req.params.userId); // Get userId from URL parameter
+    const file = req.file;
+
+    console.log(userId);
+    console.log(file);
+
+    // Check if a file is uploaded
+    if (!file) {
+        return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // Prepare image details for database
+    const imageName = file.filename;
+    const imagePath = `/uploads/${imageName}`;
+    const mimeType = file.mimetype;
+    const size = file.size;
+    const extension = path.extname(imageName);
+
+    try {
+        // Insert the image details into the user_images table
+        const image = await user_images.create({
+            userId,
+            imageName,
+            imagePath,
+            mimeType,
+            extension,
+            size
+        });
+
+        // Respond with success message
+        res.status(201).json({ message: "Image uploaded successfully!", image });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error uploading image", error: err.message });
+    }
+}
+//retrieve an image
+async function getImg(req, res) {
+    const userId = parseInt(req.params.userId);  // Get userId from URL parameter
+    console.log(userId)
+    if (!userId) {
+        return res.status(400).json({ error: "Please enter user ID to proceed." });
+    }
+
+    try {
+        const user = await user_images.findAll({
+            where: {
+            id:userId,
+          },});
+        console.log('User Image displayed successfully!')
+        res.status(201).json({ message: 'User Image displayed successfully!', user });
+
+        //for error messages
+        if (user.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ message: "No images found for the user." });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching user images." });
+    }
+}
+
 module.exports = {
     home,
+
+    //users
     createUser,
     getUsers,
     getUsersById,
     updateUser,
     deleteUser,
 
+    //user_profiles
     createUserProfile,
     getUserprofiles,
     getUserProfileById,
-    deleteUserProfile
+    deleteUserProfile,
+
+    //user_images
+    uploadImg,
+    getImg
 }
