@@ -1,6 +1,6 @@
 const { users } = require('../models/usersModel');
 const { user_profiles } = require('../models/userProfilesModel');
-const yup = require('yup');
+
 
 async function userIdValidator(req, res, next) {
     const userId = req.params.userId;
@@ -26,12 +26,6 @@ async function userIdValidator(req, res, next) {
         // ID exists, continue with the request
         next();
     } catch (err) {
-        // If the validation fails
-        if (err instanceof yup.ValidationError) {
-            return res.status(400).json({ message: err.errors[0] });
-        }
-
-        // Handle any other errors
         console.error(err);
         return res.status(500).json({ message: 'Error checking if ID exists' });
     }
@@ -63,12 +57,6 @@ async function userProfileValidator(req, res, next) {
         // ID exists, continue with the request
         next();
     } catch (err) {
-        // If the validation fails
-        if (err instanceof yup.ValidationError) {
-            return res.status(400).json({ message: err.errors[0] });
-        }
-
-        // Handle any other errors
         console.error(err);
         return res.status(500).json({ message: 'Error checking if profile ID exists' });
     }

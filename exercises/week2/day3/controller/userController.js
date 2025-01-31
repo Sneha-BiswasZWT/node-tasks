@@ -2,6 +2,10 @@ const { users } = require('../models/usersModel');
 const { user_profiles } = require('../models/userProfilesModel');
 const { user_images } = require('../models/userImagesModel');
 const path = require("path");
+const { createUserSchema, updateUserSchema, UserProfileSchema } = require('../validators/validators');
+const bcrypt = require("bcrypt");
+
+users.sync({ alter: true });
 
 //home fuction
 async function home(req, res) {
@@ -9,15 +13,18 @@ async function home(req, res) {
         .status(200)
         .json({ message: "Welcome to the User Management API!" });
 }
-
 //users table
-//create new user
-async function createUser(req, res) {
-    const { name, age, email, role, isActive } = req.body;
-    //console.log('Form Data:', req.body);
-
+//signup new user
+async function signUpUser(req, res) {
+    
     try {
+        await createUserSchema.validate(req.body, { abortEarly: false });
+        var { username, password, name, age, email, role, isActive } = req.body;
+        role = role.toLowerCase();
+        //console.log('Form Data:', req.body);
         const user = await users.create({
+            username,
+            password,
             name,
             age,
             email,
@@ -25,8 +32,12 @@ async function createUser(req, res) {
             isActive
         });
         return res.status(201).json({ message: 'User created successfully!', user });
-    } catch (error) {
-        return res.status(400).json({ message: 'Error creating user', error: error.message });
+    } catch (err) {
+        if (err.name === "ValidationError") {
+            // Handle validation errors
+            return res.status(400).json({ message: err.errors });
+        }
+        return res.status(400).json({ message: 'Error creating user', error: err.message });
     }
 };
 
@@ -41,6 +52,36 @@ async function getUsers(req, res) {
         return res.status(400).json({ message: 'Error fetching users', error: error.message });
     }
 };
+
+//login user
+async function loginUser(req, res) {
+    try {
+        const { username, password } = req.body;
+        // console.log('Form Data:', req.body);
+
+        const user = await users.findOne({
+            where: { username: username }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'No user with this username' });
+        }
+
+        const isValid = await bcrypt.compare(password, user.password);  // Fix here
+        if (!isValid) {
+            return res.status(400).json({ message: 'Wrong password' });
+        }
+
+        return res.status(200).json({ message: 'Login successful!', user });  // Status should be 200, not 201
+    } catch (err) {
+        if (err.name === "ValidationError") {
+            // Handle validation errors
+            return res.status(400).json({ message: 'Validation error', error: err.errors });
+        }
+        return res.status(500).json({ message: 'Error logging in user', error: err.message });  // Changed to 500 for unexpected errors
+    }
+}
+
 
 //get specific user
 async function getUsersById(req, res) {
@@ -65,11 +106,17 @@ async function updateUser(req, res) {
     const userId = req.params.userId;
     const { name, age, email, role, isActive } = req.body;
 
-    if (!name && !age && !email && !role && isActive === undefined) {
-        return res.status(400).json({ message: 'No fields provided for update.' });
-    }
-
     try {
+        await updateUserSchema.validate(req.body, { abortEarly: false });
+
+        //fields to update
+        const updateFields = { name, email, age, role, isActive };
+        const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null);
+
+        if (validFields.length === 0) {
+            return res.status(403).json({ error: "No parameters entered" });
+        }
+
         const user = await users.update(
             {
                 name: name,
@@ -87,11 +134,20 @@ async function updateUser(req, res) {
         const updatedUser = await users.findOne({
             where: { id: userId },
         });
-        console.log('Users updated successfully!')
-        return res.status(201).json({ message: 'Users updated successfully!', updatedUser });
-    } catch (error) {
-        console.log('Error updating users')
-        return res.status(400).json({ message: 'Error updating user', error: error.message });
+        if (user) {
+            console.log('Users updated successfully!')
+            return res.status(201).json({ message: 'Users updated successfully!', updatedUser });
+        } else {
+            return res.status(404).json({ message: "User not found" });
+        }        
+    }  catch (err) {
+        console.log("Error during validation:", err);
+
+        if (err && err.errors && Array.isArray(err.errors)) {
+            return res.status(400).json({ error: err.message });
+        }
+
+        return res.status(400).json({ message: 'Error creating user', error: err.message });
     }
 };
 //delete a user
@@ -120,11 +176,8 @@ async function createUserProfile(req, res) {
     userId = req.params.userId;
     const { bio, linkedInUrl, facebookUrl, instaUrl } = req.body;
 
-    if (!bio && !linkedInUrl && !facebookUrl && !instaUrl) {
-        return res.status(400).json({ message: 'No fields provided for create. enter atleast 1.' });
-    }
-
     try {
+        await UserProfileSchema.validate(req.body, { abortEarly: false });
         const user = await user_profiles.create({
             userId,
             bio,
@@ -134,10 +187,9 @@ async function createUserProfile(req, res) {
         });
         return res.status(201).json({ message: 'User Profile created successfully!', user });
     } catch (error) {
-        if (error.name === 'SequelizeValidationError') {
-            // Extract all validation error messages
-            const validationErrors = error.errors.map(err => err.message);
-            return res.status(400).json({ message: 'Validation failed', errors: validationErrors });
+        if (error.name === 'ValidationError') {
+            
+            return res.status(400).json({ message: 'Validation failed', errors: error.message});
         }
         return res.status(400).json({ message: 'Error creating user Profile', error: error.message });
     }
@@ -178,11 +230,16 @@ async function updateUserProfile(req, res) {
     const userId = req.params.userId;
     const { bio, linkedInUrl, facebookUrl, instaUrl } = req.body;
 
-    if (!bio && !linkedInUrl && !facebookUrl && !instaUrl) {
-        return res.status(400).json({ message: 'No fields provided for update.' });
-    }
 
     try {
+        await UserProfileSchema.validate(req.body, { abortEarly: false });
+        //fields to update
+        const updateFields = { bio, linkedInUrl, facebookUrl, instaUrl };
+        const validFields = Object.entries(updateFields).filter(([_, value]) => value !== undefined && value !== null);
+
+        if (validFields.length === 0) {
+            return res.status(403).json({ error: "No parameters entered" });
+        }
         const user = await user_profiles.update(
             {
                 bio: bio,
@@ -357,7 +414,8 @@ module.exports = {
     home,
 
     //users
-    createUser,
+    signUpUser,
+    loginUser,
     getUsers,
     getUsersById,
     updateUser,

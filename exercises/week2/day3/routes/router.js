@@ -5,7 +5,8 @@ const {userIdValidator, userProfileValidator} = require("../middlewares/IdValida
 const {imageUploader, pdfUploader} = require("../middlewares/fileUploader");
 
 router.get("/", controller.home);
-router.post("/users_demo", controller.createUser);
+router.post("/users_demo/signup", controller.signUpUser);
+router.get("/users_demo/login", controller.loginUser);
 router.get("/users_demo", controller.getUsers);
 router.get("/users_demo/:userId",userIdValidator, controller.getUsersById);
 router.patch("/users_demo/:userId",userIdValidator, controller.updateUser);
