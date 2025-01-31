@@ -24,9 +24,9 @@ async function createUser(req, res) {
             role,
             isActive
         });
-        res.status(201).json({ message: 'User created successfully!', user });
+        return res.status(201).json({ message: 'User created successfully!', user });
     } catch (error) {
-        res.status(400).json({ message: 'Error creating user', error: error.message });
+        return res.status(400).json({ message: 'Error creating user', error: error.message });
     }
 };
 
@@ -35,88 +35,90 @@ async function getUsers(req, res) {
     try {
         const user = await users.findAll();
         console.log('Users displayed successfully!')
-        res.status(201).json({ message: 'Users displayed successfully!', user });
+        return res.status(201).json({ message: 'Users displayed successfully!', user });
     } catch (error) {
         console.log('Error fetching users')
-        res.status(400).json({ message: 'Error fetching users', error: error.message });
+        return res.status(400).json({ message: 'Error fetching users', error: error.message });
     }
 };
 
 //get specific user
 async function getUsersById(req, res) {
-    const userId=req.params.userId;
+    const userId = req.params.userId;
 
     try {
         const user = await users.findOne({
             where: {
-            id:userId,
-          },});
-        console.log('Users displayed successfully!')
-        res.status(201).json({ message: 'Users displayed successfully!', user });
+                id: userId,
+            },
+        });
+        console.log('User displayed successfully!')
+        return res.status(201).json({ message: 'User displayed successfully!', user });
     } catch (error) {
-        console.log('Error fetching users')
-        res.status(400).json({ message: 'Error fetching users', error: error.message });
+        console.log('Error fetching user')
+        return res.status(400).json({ message: 'Error fetching user', error: error.message });
     }
 };
 
 //update a user
 async function updateUser(req, res) {
-    const userId=req.params.userId;
-    const {name,age,email,role, isActive}=req.body;
+    const userId = req.params.userId;
+    const { name, age, email, role, isActive } = req.body;
 
     if (!name && !age && !email && !role && isActive === undefined) {
         return res.status(400).json({ message: 'No fields provided for update.' });
     }
 
     try {
-        const [user] = await users.update(
-            { name: name,
-                age:age,
-                email:email,
-                role:role,
-                isActive:isActive
-             },
+        const user = await users.update(
             {
-              where: {
-                id:userId,
-              },
+                name: name,
+                age: age,
+                email: email,
+                role: role,
+                isActive: isActive
             },
-          );
-          const updatedUser = await users.findOne({
+            {
+                where: {
+                    id: userId,
+                },
+            },
+        );
+        const updatedUser = await users.findOne({
             where: { id: userId },
         });
         console.log('Users updated successfully!')
-        res.status(201).json({ message: 'Users updated successfully!',updatedUser });
+        return res.status(201).json({ message: 'Users updated successfully!', updatedUser });
     } catch (error) {
-        console.log('Error fetching users')
-        res.status(400).json({ message: 'Error updating user', error: error.message });
+        console.log('Error updating users')
+        return res.status(400).json({ message: 'Error updating user', error: error.message });
     }
 };
 //delete a user
 async function deleteUser(req, res) {
-    const userId=req.params.userId;
+    const userId = req.params.userId;
 
     try {
         const user = await users.destroy(
             {
-              where: {
-                id:userId,
-              },
+                where: {
+                    id: userId,
+                },
             },
-          );
+        );
         console.log('User deleted successfully!')
-        res.status(201).json({ message: 'User deleted successfully!' });
+        return res.status(201).json({ message: 'User deleted successfully!' });
     } catch (error) {
-        console.log('Error fetching users')
-        res.status(400).json({ message: 'Error deleting user', error: error.message });
+        console.log('Error deleting users')
+        return res.status(400).json({ message: 'Error deleting user', error: error.message });
     }
 };
 
 //user_profile table
 //create a new user profile
 async function createUserProfile(req, res) {
-    userId=req.params.userId;
-    const { bio, linkedInUrl, facebookUrl, instaUrl} = req.body;
+    userId = req.params.userId;
+    const { bio, linkedInUrl, facebookUrl, instaUrl } = req.body;
 
     if (!bio && !linkedInUrl && !facebookUrl && !instaUrl) {
         return res.status(400).json({ message: 'No fields provided for create. enter atleast 1.' });
@@ -126,18 +128,18 @@ async function createUserProfile(req, res) {
         const user = await user_profiles.create({
             userId,
             bio,
-            linkedInUrl, 
-            facebookUrl, 
+            linkedInUrl,
+            facebookUrl,
             instaUrl
         });
-        res.status(201).json({ message: 'User created successfully!', user });
+        return res.status(201).json({ message: 'User Profile created successfully!', user });
     } catch (error) {
-        if (error.name === 'SequelizeValidationError' ) {
+        if (error.name === 'SequelizeValidationError') {
             // Extract all validation error messages
             const validationErrors = error.errors.map(err => err.message);
             return res.status(400).json({ message: 'Validation failed', errors: validationErrors });
         }
-        res.status(400).json({ message: 'Error creating user', error: error.message });
+        return res.status(400).json({ message: 'Error creating user Profile', error: error.message });
     }
 };
 
@@ -146,47 +148,82 @@ async function getUserprofiles(req, res) {
     try {
         const user = await user_profiles.findAll();
         console.log('User profiles displayed successfully!')
-        res.status(201).json({ message: 'User profiles displayed successfully!', user });
+        return res.status(201).json({ message: 'User profiles displayed successfully!', user });
     } catch (error) {
-        console.log('Error fetching users')
-        res.status(400).json({ message: 'Error fetching user profiles', error: error.message });
+        console.log('Error fetching user Profiles')
+        return res.status(400).json({ message: 'Error fetching user profiles', error: error.message });
     }
 };
 
 //get specific user Profile
 async function getUserProfileById(req, res) {
-    const userId=req.params.id;
+    const userId = req.params.id;
 
     try {
         const user = await user_profiles.findOne({
             where: {
-            id:userId,
-          },});
-        console.log('User profiles displayed successfully!')
-        res.status(201).json({ message: 'User profiles displayed successfully!', user });
+                id: userId,
+            },
+        });
+        console.log('User profile displayed successfully!')
+        return res.status(201).json({ message: 'User profile displayed successfully!', user });
     } catch (error) {
-        console.log('Error fetching user profiles')
-        res.status(400).json({ message: 'Error fetching user profiles', error: error.message });
+        console.log('Error fetching user profile')
+        return res.status(400).json({ message: 'Error fetching user profile', error: error.message });
+    }
+};
+
+//updating a user profile
+async function updateUserProfile(req, res) {
+    const userId = req.params.userId;
+    const { bio, linkedInUrl, facebookUrl, instaUrl } = req.body;
+
+    if (!bio && !linkedInUrl && !facebookUrl && !instaUrl) {
+        return res.status(400).json({ message: 'No fields provided for update.' });
+    }
+
+    try {
+        const user = await user_profiles.update(
+            {
+                bio: bio,
+                linkedInUrl: linkedInUrl,
+                facebookUrl: facebookUrl,
+                instaUrl: instaUrl
+            },
+            {
+                where: {
+                    userId: userId,
+                },
+            },
+        );
+        const updatedUser = await user_profiles.findOne({
+            where: { userId: userId },
+        });
+        console.log('User profile updated successfully!')
+        return res.status(201).json({ message: 'User profile updated successfully!', updatedUser });
+    } catch (error) {
+        console.log('Error updating user profile')
+        return res.status(400).json({ message: 'Error updating user profile', error: error.message });
     }
 };
 
 //delete a user profile
 async function deleteUserProfile(req, res) {
-    const userId=req.params.id;
+    const userId = req.params.id;
 
     try {
         const user = await user_profiles.destroy(
             {
-              where: {
-                id:userId,
-              },
+                where: {
+                    id: userId,
+                },
             },
-          );
-        console.log('User deleted successfully!')
-        res.status(201).json({ message: 'User deleted successfully!' });
+        );
+        console.log('User Profile deleted successfully!')
+        return res.status(201).json({ message: 'User Profile deleted successfully!' });
     } catch (error) {
-        console.log('Error fetching users')
-        res.status(400).json({ message: 'Error deleting user', error: error.message });
+        console.log('Error deleting user Profile')
+        return res.status(400).json({ message: 'Error deleting user Profile', error: error.message });
     }
 };
 
@@ -223,39 +260,98 @@ async function uploadImg(req, res) {
         });
 
         // Respond with success message
-        res.status(201).json({ message: "Image uploaded successfully!", image });
+        return res.status(201).json({ message: "Image uploaded successfully!", image });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error uploading image", error: err.message });
+        return res.status(500).json({ message: "Error uploading image", error: err.message });
     }
 }
+//retrieve all images
+async function getImgs(req, res) {
+    try {
+        const user = await user_images.findAll();
+        console.log('User images displayed successfully!')
+        return res.status(201).json({ message: 'User images displayed successfully!', user });
+    } catch (error) {
+        console.log('Error fetching user images')
+        return res.status(400).json({ message: 'Error fetching user images', error: error.message });
+    }
+};
 //retrieve an image
-async function getImg(req, res) {
-    const userId = parseInt(req.params.userId);  // Get userId from URL parameter
+async function getImgById(req, res) {
+    const userId = req.params.userId;  // Get userId from URL parameter
     console.log(userId)
     if (!userId) {
         return res.status(400).json({ error: "Please enter user ID to proceed." });
     }
 
     try {
-        const user = await user_images.findAll({
+        const user = await user_images.findOne({
             where: {
-            id:userId,
-          },});
+                userId: userId,
+            },
+        });
         console.log('User Image displayed successfully!')
-        res.status(201).json({ message: 'User Image displayed successfully!', user });
 
         //for error messages
-        if (user.length > 0) {
-            res.json(rows[0]);
-        } else {
-            res.status(404).json({ message: "No images found for the user." });
+        if (!user) {
+            return res.status(404).json({ message: "No images found for the user." });
         }
+        return res.status(201).json({ message: 'User Image displayed successfully!', user });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error fetching user images." });
+        return res.status(500).json({ message: "Error fetching user images." });
     }
 }
+
+//delete user image
+async function deleteUserImage(req, res) {
+    const userId = req.params.userId;
+
+    try {
+        const user = await user_images.destroy(
+            {
+                where: {
+                    userId: userId,
+                },
+            },
+        );
+        console.log('User Image deleted successfully!')
+        return res.status(201).json({ message: 'User Image deleted successfully!' });
+    } catch (error) {
+        console.log('Error deleting users Image')
+        return res.status(400).json({ message: 'Error deleting user Image', error: error.message });
+    }
+};
+
+//get all user details with profile and images
+async function getUsersDetails(req, res) {
+    const userId = req.params.userId;
+
+    try {
+        const user = await users.findOne({
+            where: { id: userId },
+            include: [
+                {
+                    model: user_profiles,
+                    attributes: ['bio', 'linkedInUrl', 'facebookUrl', 'instaUrl'],
+                    required: false, // LEFT JOIN behavior
+                },
+                {
+                    model: user_images,
+                    attributes: ['imageName', 'imagePath'], // Alias path as imageUrl
+                    required: false, // LEFT JOIN behavior
+                }
+            ],
+        });
+        console.log('User displayed successfully!')
+        return res.status(201).json({ message: 'User displayed successfully!', user });
+    } catch (error) {
+        console.log('Error fetching user')
+        return res.status(400).json({ message: 'Error fetching user', error: error.message });
+    }
+};
+
 
 module.exports = {
     home,
@@ -271,9 +367,15 @@ module.exports = {
     createUserProfile,
     getUserprofiles,
     getUserProfileById,
+    updateUserProfile,
     deleteUserProfile,
 
     //user_images
     uploadImg,
-    getImg
+    getImgs,
+    getImgById,
+    deleteUserImage,
+
+    getUsersDetails
+    
 }
