@@ -4,6 +4,8 @@ const { user_images } = require('../models/userImagesModel');
 const path = require("path");
 const { createUserSchema, updateUserSchema, UserProfileSchema } = require('../validators/validators');
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+//require('dotenv').config()
 
 users.sync({ alter: true });
 
@@ -83,8 +85,8 @@ async function getUsers(req, res) {
 async function loginUser(req, res) {
     try {
         const { username, password } = req.body;
-        // console.log('Form Data:', req.body);
 
+        // Fetch user from DB by username
         const user = await users.findOne({
             where: { username: username }
         });
@@ -93,21 +95,28 @@ async function loginUser(req, res) {
             return res.status(400).json({ message: 'No user with this username' });
         }
 
-        const isValid = await bcrypt.compare(password, user.password);  // Fix here
+        // Compare hashed passwords
+        const isValid = await bcrypt.compare(password, user.password);  
         if (!isValid) {
             return res.status(400).json({ message: 'Wrong password' });
         }
 
-        return res.status(200).json({ message: 'Login successful!', user });  // Status should be 200, not 201
+        // Create JWT token with user details
+        const token = jwt.sign(
+            { id: user.id, username: user.username, role: user.role }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1h' }  // Token expires in 1 hour
+        );
+
+        return res.status(200).json({ 
+            message: 'Login successful!', 
+            token: token 
+        }); 
+
     } catch (err) {
-        if (err.name === "ValidationError") {
-            // Handle validation errors
-            return res.status(400).json({ message: 'Validation error', error: err.errors });
-        }
-        return res.status(500).json({ message: 'Error logging in user', error: err.message });  // Changed to 500 for unexpected errors
+        return res.status(500).json({ message: 'Error logging in user', error: err.message });  
     }
 }
-
 
 //get specific user
 async function getUsersById(req, res) {
@@ -418,12 +427,12 @@ async function getUsersDetails(req, res) {
                 {
                     model: user_profiles,
                     attributes: ['bio', 'linkedInUrl', 'facebookUrl', 'instaUrl'],
-                    required: false, // LEFT JOIN behavior
+                    required: false, 
                 },
                 {
                     model: user_images,
-                    attributes: ['imageName', 'imagePath'], // Alias path as imageUrl
-                    required: false, // LEFT JOIN behavior
+                    attributes: ['imageName', 'imagePath'],
+                    required: false, 
                 }
             ],
         });

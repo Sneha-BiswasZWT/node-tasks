@@ -3,11 +3,12 @@ const router = express.Router();
 const controller= require("../controller/userController")
 const {userIdValidator, userProfileValidator} = require("../middlewares/IdValidator");
 const {imageUploader, pdfUploader} = require("../middlewares/fileUploader");
+const { verifyToken } = require("../middlewares/auth");
 
 router.get("/", controller.home);
 router.post("/users_demo/signup", controller.signUpUser);
 router.get("/users_demo/login", controller.loginUser);
-router.get("/users_demo", controller.getUsers);
+router.get("/users_demo",verifyToken, controller.getUsers);
 router.get("/users_demo/:userId",userIdValidator, controller.getUsersById);
 router.patch("/users_demo/:userId",userIdValidator, controller.updateUser);
 router.delete("/users_demo/:userId",userIdValidator, controller.deleteUser);
