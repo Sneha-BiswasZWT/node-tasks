@@ -86,7 +86,6 @@ async function loginUser(req, res) {
     try {
         const { username, password } = req.body;
 
-        // Fetch user from DB by username
         const user = await users.findOne({
             where: { username: username }
         });
@@ -95,17 +94,17 @@ async function loginUser(req, res) {
             return res.status(400).json({ message: 'No user with this username' });
         }
 
-        // Compare hashed passwords
+        // Compare password
         const isValid = await bcrypt.compare(password, user.password);  
         if (!isValid) {
             return res.status(400).json({ message: 'Wrong password' });
         }
 
-        // Create JWT token with user details
+        // Create JWT token 
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role }, 
             process.env.JWT_SECRET, 
-            { expiresIn: '1h' }  // Token expires in 1 hour
+            { expiresIn: '1h' }  
         );
 
         return res.status(200).json({ 
