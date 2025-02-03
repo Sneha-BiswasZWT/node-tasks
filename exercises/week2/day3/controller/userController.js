@@ -44,12 +44,38 @@ async function signUpUser(req, res) {
 //get all users
 async function getUsers(req, res) {
     try {
-        const user = await users.findAll();
-        console.log('Users displayed successfully!')
-        return res.status(201).json({ message: 'Users displayed successfully!', user });
+        //with pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await users.findAndCountAll({
+            limit: limit,
+            offset: offset
+        });
+
+        const totalPages = Math.ceil(count / limit);
+        const paginationInfo = {
+            totalUsers: count,
+            totalPages: totalPages,
+            currentPage: page,
+            nextPage: page < totalPages ? page + 1 : null,
+            prevPage: page > 1 ? page - 1 : null,
+        };
+
+        console.log("Users displayed successfully!");
+        return res.status(200).json({
+            message: "Users displayed successfully!",
+            pagination: paginationInfo,
+            users: rows
+        });
+
     } catch (error) {
-        console.log('Error fetching users')
-        return res.status(400).json({ message: 'Error fetching users', error: error.message });
+        console.error("Error fetching users:", error);
+        return res.status(500).json({
+            message: "Error fetching users",
+            error: error.message
+        });
     }
 };
 
@@ -408,7 +434,7 @@ async function getUsersDetails(req, res) {
         return res.status(400).json({ message: 'Error fetching user', error: error.message });
     }
 };
-
+  
 
 module.exports = {
     home,
