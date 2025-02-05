@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "categories", // Make sure 'categories' is the correct table name
+          model: "categories",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -41,15 +41,14 @@ module.exports = {
         allowNull: true,
       },
       created_at: {
-        type: Sequelize.TIMESTAMP,
+        type: Sequelize.Date,
         defaultValue: Sequelize.NOW,
         allowNull: false,
       },
       updated_at: {
-        type: Sequelize.TIMESTAMP,
+        type: Sequelize.Date,
         defaultValue: Sequelize.NOW,
         allowNull: false,
-        onUpdate: Sequelize.NOW,
       },
     });
   },

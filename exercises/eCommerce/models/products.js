@@ -1,8 +1,8 @@
 const { sequelize } = require("../config");
 const { DataTypes } = require("sequelize");
-const { categories } = require("./categories");
+const Categories = require("./categories");
 
-const products = sequelize.define(
+const Products = sequelize.define(
   "products",
   {
     id: {
@@ -32,7 +32,7 @@ const products = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "categories", // references categories table
+        model: Categories,
         key: "id",
       },
     },
@@ -49,7 +49,6 @@ const products = sequelize.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: false,
-      onUpdate: DataTypes.NOW,
     },
   },
   {
@@ -59,10 +58,10 @@ const products = sequelize.define(
   }
 );
 
-categories.hasMany(products, {
+Categories.hasMany(Products, {
   foreignKey: "category_id",
   onDelete: "CASCADE",
 });
-products.belongsTo(categories, { foreignKey: "category_id" });
+Products.belongsTo(Categories, { foreignKey: "category_id" });
 
-module.exports = Product;
+module.exports = Products;

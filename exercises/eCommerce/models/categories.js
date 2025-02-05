@@ -1,38 +1,37 @@
 const { sequelize } = require("../config");
 const { DataTypes } = require("sequelize");
-const bcrypt = require("bcrypt");
 
 // User model definition
-const categories = sequelize.define(
+const Categories = sequelize.define(
   "categories",
   {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: sequelize.INTEGER,
+      type: DataTypes.INTEGER,
     },
     name: {
-      type: sequelize.STRING(100),
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
     },
     created_at: {
-      type: sequelize.DATE,
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: sequelize.NOW,
     },
     updated_at: {
-      type: sequelize.DATE,
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: sequelize.NOW,
     },
   },
   {
-    freezeTableName: true,
+    tableName: "categories",
     underscored: true,
     timestamps: true,
   }
 );
 
-module.exports = { categories };
+module.exports = Categories;
