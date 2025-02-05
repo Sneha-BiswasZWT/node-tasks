@@ -1,6 +1,6 @@
 const { sequelize } = require("../config");
 const { DataTypes } = require("sequelize");
-const { users } = require("./users");
+const { users } = require("./usersModel");
 const Products = require("./products");
 
 const wishlists = sequelize.define(
@@ -45,7 +45,7 @@ const wishlists = sequelize.define(
 users.hasMany(wishlists, { foreignKey: "user_id", onDelete: "CASCADE" });
 wishlists.belongsTo(users, { foreignKey: "user_id" });
 
-Products.hasMany(wishlist, { foreignKey: "product_id", onDelete: "CASCADE" });
+Products.hasMany(wishlists, { foreignKey: "product_id", onDelete: "CASCADE" });
 wishlists.belongsTo(Products, { foreignKey: "product_id" });
 
 module.exports = { wishlists };

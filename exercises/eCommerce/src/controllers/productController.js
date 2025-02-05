@@ -97,6 +97,12 @@ async function addProduct(req, res) {
     const imageName = file.filename;
     const image_url = `/uploads/${imageName}`;
 
+    const category = await categories.findByPk(category_id);
+
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
     const product = await Products.create({
       name,
       description,

@@ -3,6 +3,10 @@ const router = express.Router();
 const Controller = require("../controllers/productController");
 const { imageUploader, pdfUploader } = require("../middlewares/fileUploader");
 const { verifyToken, isAdmin, isCustomer } = require("../middlewares/auth");
+const {
+  categoryIdValidator,
+  userProfileValidator,
+} = require("../middlewares/idValidator");
 
 //category routes
 router.post("/categories", verifyToken, isAdmin, Controller.createCategory);
