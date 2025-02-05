@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     // Inserting dummy data into the categories table
     await queryInterface.bulkInsert(
-      "Categories",
+      "categories",
       [
         { name: "Tech Gadgets" },
         {
@@ -29,6 +29,6 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     // Reverting the data insertion (deleting all categories)
-    await queryInterface.bulkDelete("Categories", null, {});
+    await queryInterface.bulkDelete("categories", null, {});
   },
 };

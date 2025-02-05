@@ -50,12 +50,12 @@ const users = sequelize.define(
     created_at: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: sequelize.NOW,
+      defaultValue: DataTypes.NOW,
     },
     updated_at: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: sequelize.NOW,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

@@ -19,12 +19,12 @@ const Categories = sequelize.define(
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.NOW,
+      defaultValue: DataTypes.NOW,
     },
     updated_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.NOW,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
