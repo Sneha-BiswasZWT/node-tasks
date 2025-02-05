@@ -4,7 +4,7 @@ const {
   createUserSchema,
   updateUserSchema,
   UserProfileSchema,
-} = require("../utils/validators");
+} = require("../utils/validators/userValidators");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 //console.log(users);
