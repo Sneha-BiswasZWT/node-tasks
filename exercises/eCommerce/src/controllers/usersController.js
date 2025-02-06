@@ -47,7 +47,7 @@ async function getUsers(req, res) {
 }
 
 //get specific user
-async function getUserById(req, res) {
+async function getUserProfile(req, res) {
   try {
     const { id } = req.user; // Access id directly from req.user
     //console.log(id);
@@ -72,7 +72,8 @@ async function getUserById(req, res) {
 async function updateUser(req, res) {
   const { id } = req.user; // Access id directly from req.user
   console.log(id);
-  const { first_name, last_name, age, email, role, password } = req.body;
+  const { first_name, last_name, age, email, role } = req.body;
+  let { password } = req.body;
   console.log(req.body);
 
   try {
@@ -87,6 +88,15 @@ async function updateUser(req, res) {
     if (validFields.length === 0) {
       return res.status(403).json({ error: "No parameters entered" });
     }
+
+    // Hash the password
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      password = hashedPassword;
+      //console.log(hashedPassword);
+    }
+
+    //console.log(updateFields.password);
 
     const user = await users.update(
       {
@@ -127,4 +137,4 @@ async function updateUser(req, res) {
   }
 }
 
-module.exports = { getUsers, getUserById, updateUser };
+module.exports = { getUsers, getUserProfile, updateUser };

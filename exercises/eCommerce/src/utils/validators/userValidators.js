@@ -16,7 +16,7 @@ const createUserSchema = yup.object().shape({
     .required("email is required"),
   role: yup
     .string()
-    .oneOf(["admin", "user"], "Role must be either 'admin' or 'user'")
+    .oneOf(["admin", "customer"], "Role must be either 'admin' or 'user'")
     .required("Role is a required field"),
 });
 

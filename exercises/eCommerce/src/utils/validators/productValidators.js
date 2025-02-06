@@ -20,6 +20,10 @@ const addProductSchema = yup.object().shape({
     .required("stock is required")
     .positive("stock cannot be negative")
     .default(0),
+  category_id: yup
+    .number()
+    .required("category_id is required")
+    .positive("category_id cannot be negative"),
 });
 
 const updateProductSchema = yup.object().shape({
@@ -40,6 +44,8 @@ const updateProductSchema = yup.object().shape({
     .nullable(),
 
   stock: yup.number().default(0).nullable(),
+
+  category_id: yup.number().positive().nullable(),
 });
 
 module.exports = { addProductSchema, updateProductSchema };

@@ -151,26 +151,31 @@ async function getProducts(req, res) {
     const offset = (page - 1) * limit;
 
     // Filters from query params
-    const { category_id, min_price, max_price, name } = req.query;
+    const { category_id, min_price, max_price, price } = req.query;
 
     // Build the filters object
     let filters = {};
 
     if (category_id) {
-      filters.category_id = category_id; // Filter by category ID
+      filters.category_id = category_id;
     }
 
     if (min_price || max_price) {
-      filters.price = {}; // Price range filter
-      if (min_price) filters.price[Op.gte] = min_price; // min price
-      if (max_price) filters.price[Op.lte] = max_price; // max price
+      filters.price = {};
+      if (min_price) filters.price[Op.gte] = min_price;
+      if (max_price) filters.price[Op.lte] = max_price;
     }
-
+    //sorting by price
+    let order = [];
+    if (price) {
+      order.push(["price", price.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    }
     // Fetching filtered products with pagination
     const { count, rows } = await Products.findAndCountAll({
       where: filters,
       limit: limit,
       offset: offset,
+      order: order,
     });
 
     // Pagination info
@@ -183,7 +188,6 @@ async function getProducts(req, res) {
       prevPage: page > 1 ? page - 1 : null,
     };
 
-    // Return the result
     return res.status(200).json({
       message: "Products displayed successfully!",
       pagination: paginationInfo,

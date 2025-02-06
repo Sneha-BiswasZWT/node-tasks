@@ -5,7 +5,7 @@ const Controller = require("../controllers/usersController");
 const { verifyToken, isAdmin, isCustomer } = require("../middlewares/auth");
 
 router.get("/users", verifyToken, isAdmin, Controller.getUsers);
-router.get("/users/profile", verifyToken, Controller.getUserById);
+router.get("/users/profile", verifyToken, Controller.getUserProfile);
 router.put("/users/profile", verifyToken, Controller.updateUser);
 
 module.exports = router;

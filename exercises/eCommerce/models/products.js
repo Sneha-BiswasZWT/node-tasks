@@ -54,7 +54,7 @@ const Products = sequelize.define(
   {
     freezeTableName: true,
     underscored: true,
-    timestamps: true,
+    timestamps: false,
   }
 );
 

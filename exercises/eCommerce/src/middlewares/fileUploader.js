@@ -55,7 +55,7 @@ const uploadImage = multer({
   fileFilter: function (_req, file, cb) {
     validateFileTypeImage(file, cb);
   },
-}).single("Image");
+}).single("image");
 
 function imageUploader(req, res, next) {
   uploadImage(req, res, (err) => {
