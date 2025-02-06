@@ -11,6 +11,7 @@ const sequelize = new Sequelize(database, user_name, user_password, {
   logging: false,
 });
 
+// Function to connect to the database
 async function connectDB() {
   try {
     await sequelize.authenticate();
