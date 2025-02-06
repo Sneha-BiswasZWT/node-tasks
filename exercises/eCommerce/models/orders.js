@@ -44,7 +44,7 @@ const orders = sequelize.define(
   {
     freezeTableName: true,
     underscored: true,
-    timestamps: true,
+    timestamps: false,
   }
 );
 

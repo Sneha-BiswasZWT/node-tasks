@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const Controller = require("../controllers/cartController");
-const { imageUploader, pdfUploader } = require("../middlewares/fileUploader");
 const { verifyToken, isAdmin, isCustomer } = require("../middlewares/auth");
 
 //cart routes

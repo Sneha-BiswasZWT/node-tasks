@@ -11,6 +11,7 @@ async function addToCart(req, res) {
     const { product_id, quantity } = req.body;
     const user_id = req.user.id; // Retrieved from the token
     //console.log(user_id);
+
     const product = await Products.findByPk(product_id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -20,6 +21,13 @@ async function addToCart(req, res) {
       where: { user_id, product_id },
     });
 
+    // Check if enough stock is available
+    if (quantity > product.stock) {
+      return res.status(400).json({
+        message: `Not enough stock for product ID ${product_id}`,
+      });
+    }
+    console.log(product.stock);
     if (existingCartItem) {
       existingCartItem.quantity += quantity;
       await existingCartItem.save();
