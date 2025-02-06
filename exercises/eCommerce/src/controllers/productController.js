@@ -11,12 +11,7 @@ const {
   addProductSchema,
   updateProductSchema,
 } = require("../utils/validators/productValidators");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
-
-//Products.sync({ alter: true });
-//categories.sync({ alter: true });
 
 //fuctions for categories
 //create a new product category

@@ -1,10 +1,7 @@
 const Products = require("../../models/products");
 const Cart = require("../../models/cart");
 const { wishlists } = require("../../models/wishlist");
-const fs = require("fs");
-const path = require("path");
 const { addToCartSchema } = require("../utils/validators/cartValidators");
-const { Op } = require("sequelize");
 
 //Add item to cart
 async function addToCart(req, res) {
