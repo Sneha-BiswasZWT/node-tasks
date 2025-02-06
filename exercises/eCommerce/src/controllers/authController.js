@@ -3,7 +3,6 @@ const path = require("path");
 const {
   createUserSchema,
   updateUserSchema,
-  UserProfileSchema,
 } = require("../utils/validators/userValidators");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -17,6 +16,7 @@ async function home(req, res) {
     .status(200)
     .json({ message: "Welcome to the User Management API!" });
 }
+
 //signup new user
 async function signUpUser(req, res) {
   try {

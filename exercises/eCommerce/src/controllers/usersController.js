@@ -3,7 +3,6 @@ const path = require("path");
 const {
   createUserSchema,
   updateUserSchema,
-  UserProfileSchema,
 } = require("../utils/validators/userValidators");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");

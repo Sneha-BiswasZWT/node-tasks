@@ -26,23 +26,20 @@ const updateProductSchema = yup.object().shape({
   name: yup
     .string()
     .max(255, "Name must be less than 255 characters")
-    .nullable(), // Make name optional
+    .nullable(),
 
   description: yup
     .string()
     .max(1000, "Description must be less than 1000 characters")
-    .nullable(), // Make description optional
+    .nullable(),
 
   price: yup
     .number()
     .positive("Price cannot be negative")
     .min(1, "Price must be at least 1")
-    .nullable(), // Make price optional, but ensure it's valid if provided
+    .nullable(),
 
-  stock: yup
-    .number()
-    .default(0) // Default to 0 if not provided
-    .nullable(), // Make stock optional, but ensure it's valid if provided
+  stock: yup.number().default(0).nullable(),
 });
 
 module.exports = { addProductSchema, updateProductSchema };
