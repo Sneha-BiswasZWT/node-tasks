@@ -6,6 +6,7 @@ const port = 3000;
 const authRoutes = require("./src/routes/authrouter");
 const userRoutes = require("./src/routes/userRouter");
 const productRoutes = require("./src/routes/productRouter");
+const cartRoutes = require("./src/routes/cartRouter");
 
 //const log = require("./middlewares/log");
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api", userRoutes);
 app.use("/api", productRoutes);
 app.use("/api", authRoutes);
+app.use("/api", cartRoutes);
 
 app.get("/status", (req, res) => {
   res.send("API RUNNING!");

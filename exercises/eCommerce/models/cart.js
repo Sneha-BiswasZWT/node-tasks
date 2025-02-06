@@ -37,11 +37,13 @@ const cart = sequelize.define(
     },
     created_at: {
       type: DataTypes.DATE,
+      field: "created_at",
       defaultValue: DataTypes.NOW,
       allowNull: false, // Timestamp when the cart item is added
     },
     updated_at: {
       type: DataTypes.DATE,
+      field: "updated_at",
       defaultValue: DataTypes.NOW,
       allowNull: false,
     },
@@ -49,7 +51,7 @@ const cart = sequelize.define(
   {
     freezeTableName: true,
     underscored: true,
-    timestamps: true, // Enable automatic timestamps (created_at & updated_at)
+    timestamps: false,
   }
 );
 
