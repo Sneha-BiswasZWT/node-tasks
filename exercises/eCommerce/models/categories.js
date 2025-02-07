@@ -14,7 +14,9 @@ const Categories = sequelize.define(
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
+      unique: {
+        msg: "This category already exists.",
+      },
     },
     created_at: {
       type: DataTypes.DATE,

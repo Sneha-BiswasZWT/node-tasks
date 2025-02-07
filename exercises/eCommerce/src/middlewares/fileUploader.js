@@ -60,7 +60,7 @@ const uploadImage = multer({
 function imageUploader(req, res, next) {
   uploadImage(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ error: err.message });
+      return handleMulterError(err, res);
     }
     next();
   });
@@ -78,10 +78,31 @@ const uploadPdf = multer({
 function pdfUploader(req, res, next) {
   uploadPdf(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ error: err.message });
+      return handleMulterError(err, res);
     }
     next();
   });
+}
+
+function handleMulterError(err, res) {
+  if (err instanceof multer.MulterError) {
+    switch (err.code) {
+      case "LIMIT_FILE_SIZE":
+        return res.status(413).json({
+          error: "File size too large! Max allowed size is 2MB for images.",
+        });
+      case "LIMIT_UNEXPECTED_FILE":
+        return res
+          .status(400)
+          .json({ error: err.message || "Unexpected file type uploaded." });
+      default:
+        return res.status(400).json({ error: "File upload failed." });
+    }
+  } else if (err) {
+    return res
+      .status(500)
+      .json({ error: "Internal server error during file upload." });
+  }
 }
 
 module.exports = { imageUploader, pdfUploader };

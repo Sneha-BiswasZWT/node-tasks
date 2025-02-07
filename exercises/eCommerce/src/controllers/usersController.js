@@ -72,74 +72,56 @@ async function getUserProfile(req, res) {
 async function updateUser(req, res) {
   const { id } = req.user; // Access id directly from req.user
   const userRole = req.user.role;
-  console.log(id);
   const { first_name, last_name, age, email, role } = req.body;
   let { password } = req.body;
-  console.log(req.body);
 
   try {
     await updateUserSchema.validate(req.body, { abortEarly: false });
 
-    //fields to update
+    // Fields to update
     const updateFields = { first_name, last_name, age, email, role, password };
     const validFields = Object.entries(updateFields).filter(
       ([_, value]) => value !== undefined && value !== null
     );
 
     if (validFields.length === 0) {
-      return res.status(403).json({ error: "No parameters entered" });
+      return res.status(400).json({ error: "No fields entered to update" });
     }
 
     // Hash the password
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      password = hashedPassword;
-      //console.log(hashedPassword);
+      password = await bcrypt.hash(password, 10);
+      updateFields.password = password;
     }
 
-    //console.log(updateFields.password);
-
+    // only admin can update role
     if (userRole !== "admin" && role) {
       return res.status(403).json({ error: "Unauthorized to update role" });
     }
 
-    const user = await users.update(
-      {
-        first_name,
-        last_name,
-        age,
-        email,
-        password,
-        role,
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
-
-    const updatedUser = await users.findOne({
+    const [affectedRows] = await users.update(updateFields, {
       where: { id: id },
     });
-    if (user) {
-      console.log("Users updated successfully!");
-      return res
-        .status(201)
-        .json({ message: "Users updated successfully!", updatedUser });
-    } else {
+
+    if (affectedRows === 0) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    const updatedUser = await users.findOne({ where: { id: id } });
+
+    return res
+      .status(200)
+      .json({ message: "User updated successfully!", updatedUser });
   } catch (err) {
-    console.log("Error during validation:", err);
+    console.error("Error during validation:", err);
 
     if (err && err.errors && Array.isArray(err.errors)) {
       return res.status(400).json({ error: err.message });
     }
 
     return res
-      .status(400)
-      .json({ message: "Error creating user", error: err.message });
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
   }
 }
 

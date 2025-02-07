@@ -45,9 +45,12 @@ async function signUpUser(req, res) {
       // Handle validation
       return res.status(400).json({ message: err.errors });
     }
+    if (err.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({ message: "Email already exists" });
+    }
     return res
-      .status(400)
-      .json({ message: "Error creating user", error: err.message });
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
   }
 }
 
@@ -55,18 +58,24 @@ async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
     const user = await users.findOne({
       where: { email: email },
     });
 
     if (!user) {
-      return res.status(400).json({ message: "No user with this email" });
+      return res.status(404).json({ message: "No user with this email" });
     }
 
     // Compare password
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      return res.status(400).json({ message: "Wrong password" });
+      return res.status(401).json({ message: "Wrong password" });
     }
 
     // Create JWT token

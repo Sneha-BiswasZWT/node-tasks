@@ -25,7 +25,7 @@ async function orderProduct(req, res) {
     const order_Items = cartItems.map((item) => {
       // Check if enough stock is available
       if (item.quantity > item.product.stock) {
-        return res.status(400).json({
+        return res.status(409).json({
           message: `Not enough stock for product ID ${item.product_id}`,
         });
       }

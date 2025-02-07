@@ -23,7 +23,7 @@ async function addToCart(req, res) {
 
     // Check if enough stock is available
     if (quantity > product.stock) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: `Not enough stock for product ID ${product_id}`,
       });
     }
@@ -66,6 +66,9 @@ async function getCartItems(req, res) {
         attributes: ["name", "price"],
       },
     });
+    if (cartItems.length === 0) {
+      return res.status(404).json({ message: "Your cart is empty" });
+    }
     return res.status(200).json({ cartItems });
   } catch (error) {
     console.error("Error fetching cart items:", error);
@@ -147,6 +150,9 @@ async function getWishlistItems(req, res) {
         attributes: ["name", "price"],
       },
     });
+    if (wishlistItems.length === 0) {
+      return res.status(404).json({ message: "Your Wishlist is empty" });
+    }
     return res.status(200).json({ wishlistItems });
   } catch (error) {
     console.error("Error fetching wishlist items:", error);

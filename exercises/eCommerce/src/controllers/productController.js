@@ -29,9 +29,15 @@ async function createCategory(req, res) {
       .status(201)
       .json({ message: "Category created successfully!", item });
   } catch (error) {
+    console.error("Error creating Category:", error);
+
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({ message: "Category already exists" });
+    }
+
     return res
-      .status(400)
-      .json({ message: "Error creating Category", error: error.message });
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 }
 
@@ -135,7 +141,7 @@ async function addProduct(req, res) {
         .json({ message: "Validation error", errors: validationErrors });
     }
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: "Error adding Product",
       error: validationError.message,
     });
@@ -227,7 +233,7 @@ async function getProductById(req, res) {
   } catch (error) {
     console.log("Error fetching product");
     return res
-      .status(400)
+      .status(500)
       .json({ message: "Error fetching product", error: error.message });
   }
 }
@@ -309,7 +315,7 @@ async function updateProduct(req, res) {
         .json({ message: "Validation error", errors: validationErrors });
     }
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: "Error updating Product",
       error: validationError.message,
     });
@@ -318,18 +324,14 @@ async function updateProduct(req, res) {
 
 //delete a product
 async function deleteProduct(req, res) {
-  const productId = req.params.id; // Get product ID from the URL params
+  const productId = req.params.id;
 
   try {
-    // Step 1: Find the product by ID
     const product = await Products.findByPk(productId);
-
-    // If product doesn't exist
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Step 2: Delete the image file from the server (if it exists)
     const imagePath = path.join(
       __dirname,
       "../uploads",
@@ -346,7 +348,6 @@ async function deleteProduct(req, res) {
       });
     }
 
-    // Step 3: Delete the product record from the database
     await product.destroy();
 
     return res.status(200).json({ message: "Product deleted successfully" });
