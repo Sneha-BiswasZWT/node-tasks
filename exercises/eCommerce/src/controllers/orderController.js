@@ -47,23 +47,22 @@ async function orderProduct(req, res) {
         { transaction }
       );
 
-      for (let item of cartItems) {
-        await orderItems.create(
-          {
-            order_id: order.id,
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price: item.product.price,
-          },
-          { transaction }
-        );
+      // prepare order items data
+      const orderItemsData = cartItems.map((item) => ({
+        order_id: order.id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.product.price,
+      }));
 
-        // Reduce product stock
-        await Products.update(
-          { stock: item.product.stock - item.quantity },
-          { where: { id: item.product_id }, transaction }
-        );
-      }
+      // Insert all order items
+      await orderItems.bulkCreate(orderItemsData, { transaction });
+
+      // Reduce product stock
+      await Products.update(
+        { stock: item.product.stock - item.quantity },
+        { where: { id: item.product_id }, transaction }
+      );
 
       await Cart.destroy({ where: { user_id }, transaction });
 
