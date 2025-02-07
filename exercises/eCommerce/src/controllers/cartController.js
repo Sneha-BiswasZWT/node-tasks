@@ -80,9 +80,9 @@ async function getCartItems(req, res) {
 async function deleteCartItem(req, res) {
   try {
     const user_id = req.user.id;
-    const product_id = req.params.id;
+    const id = req.params.id;
     const cartItem = await Cart.findOne({
-      where: { user_id, product_id },
+      where: { user_id, id },
     });
     if (!cartItem) {
       return res.status(404).json({ message: "Product not found in cart" });
