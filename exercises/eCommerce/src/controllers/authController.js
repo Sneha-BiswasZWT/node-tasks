@@ -6,7 +6,6 @@ const {
 } = require("../utils/validators/userValidators");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-//console.log(users);
 
 users.sync({ alter: true });
 
@@ -25,8 +24,6 @@ async function signUpUser(req, res) {
     console.log(req.body);
 
     role = role.toLowerCase();
-    //console.log('Form Data:', req.body);
-    //console.log(users);
 
     const user = await users.create({
       password,
@@ -36,7 +33,7 @@ async function signUpUser(req, res) {
       email,
       role,
     });
-    //console.log(user);
+
     return res
       .status(201)
       .json({ message: "User created successfully!", user });

@@ -3,7 +3,6 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Inserting dummy data into the categories table
     await queryInterface.bulkInsert(
       "categories",
       [
@@ -28,7 +27,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    // Reverting the data insertion (deleting all categories)
     await queryInterface.bulkDelete("categories", null, {});
   },
 };

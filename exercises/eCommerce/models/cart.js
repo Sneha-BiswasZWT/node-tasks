@@ -4,42 +4,42 @@ const { users } = require("./usersModel");
 const Products = require("./products");
 
 const cart = sequelize.define(
-  "cart", // Model name
+  "cart",
   {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
-      primaryKey: true, // Primary Key
+      primaryKey: true,
     },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "users", // Reference the users table
+        model: "users",
         key: "id",
       },
-      onDelete: "CASCADE", // Delete cart item if user is deleted
+      onDelete: "CASCADE",
     },
     product_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "products", // Reference the products table
+        model: "products",
         key: "id",
       },
-      onDelete: "CASCADE", // Delete cart item if product is deleted
+      onDelete: "CASCADE",
     },
     quantity: {
       type: DataTypes.INTEGER,
-      defaultValue: 1, // Default quantity is 1
+      defaultValue: 1,
       allowNull: false,
     },
     created_at: {
       type: DataTypes.DATE,
       field: "created_at",
       defaultValue: DataTypes.NOW,
-      allowNull: false, // Timestamp when the cart item is added
+      allowNull: false,
     },
     updated_at: {
       type: DataTypes.DATE,
@@ -57,11 +57,11 @@ const cart = sequelize.define(
 
 // Relationships
 cart.belongsTo(users, {
-  foreignKey: "user_id", // Foreign key to users table
+  foreignKey: "user_id",
   onDelete: "CASCADE",
 });
 cart.belongsTo(Products, {
-  foreignKey: "product_id", // Foreign key to products table
+  foreignKey: "product_id",
   onDelete: "CASCADE",
 });
 

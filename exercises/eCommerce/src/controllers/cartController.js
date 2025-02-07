@@ -10,7 +10,6 @@ async function addToCart(req, res) {
 
     const { product_id, quantity } = req.body;
     const user_id = req.user.id; // Retrieved from the token
-    //console.log(user_id);
 
     const product = await Products.findByPk(product_id);
     if (!product) {

@@ -55,7 +55,6 @@ async function orderProduct(req, res) {
         price: item.product.price,
       }));
 
-      // Insert all order items in bulk
       await orderItems.bulkCreate(orderItemsData, { transaction });
 
       // Reduce stock for all products
