@@ -39,7 +39,7 @@ async function orderProduct(req, res) {
     });
 
     // Start transaction
-    const transaction = await sequelize.transaction(); // to ensure that all operations are executed successfully
+    const transaction = await sequelize.transaction(); // verifies is all the data is correct before saving it to the database
 
     try {
       const order = await orders.create(
@@ -47,7 +47,7 @@ async function orderProduct(req, res) {
         { transaction }
       );
 
-      // prepare order items data
+      // Prepare order items data
       const orderItemsData = cartItems.map((item) => ({
         order_id: order.id,
         product_id: item.product_id,
@@ -55,17 +55,23 @@ async function orderProduct(req, res) {
         price: item.product.price,
       }));
 
-      // Insert all order items
+      // Insert all order items in bulk
       await orderItems.bulkCreate(orderItemsData, { transaction });
 
-      // Reduce product stock
-      await Products.update(
-        { stock: item.product.stock - item.quantity },
-        { where: { id: item.product_id }, transaction }
+      // Reduce stock for all products
+      await Promise.all(
+        cartItems.map((item) =>
+          Products.update(
+            { stock: item.product.stock - item.quantity },
+            { where: { id: item.product_id }, transaction }
+          )
+        )
       );
 
+      // Clear the user's cart
       await Cart.destroy({ where: { user_id }, transaction });
 
+      // Commit transaction
       await transaction.commit();
 
       return res.status(201).json({
