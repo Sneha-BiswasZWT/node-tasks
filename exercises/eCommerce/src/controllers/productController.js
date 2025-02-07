@@ -51,7 +51,7 @@ async function getCategories(req, res) {
     // Pagination
     const totalPages = Math.ceil(count / limit);
     const paginationInfo = {
-      totalUsers: count,
+      totalCategories: count,
       totalPages: totalPages,
       currentPage: page,
       nextPage: page < totalPages ? page + 1 : null,
@@ -157,6 +157,10 @@ async function getProducts(req, res) {
     let filters = {};
 
     if (category_id) {
+      const category = await categories.findByPk(category_id);
+      if (!category) {
+        return res.status(404).json({ error: "Category not found" });
+      }
       filters.category_id = category_id;
     }
 
@@ -181,7 +185,7 @@ async function getProducts(req, res) {
     // Pagination info
     const totalPages = Math.ceil(count / limit);
     const paginationInfo = {
-      totalItems: count,
+      totalProducts: count,
       totalPages: totalPages,
       currentPage: page,
       nextPage: page < totalPages ? page + 1 : null,
