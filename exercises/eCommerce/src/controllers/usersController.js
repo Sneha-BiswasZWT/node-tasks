@@ -71,6 +71,7 @@ async function getUserProfile(req, res) {
 //update a user
 async function updateUser(req, res) {
   const { id } = req.user; // Access id directly from req.user
+  const userRole = req.user.role;
   console.log(id);
   const { first_name, last_name, age, email, role } = req.body;
   let { password } = req.body;
@@ -98,14 +99,18 @@ async function updateUser(req, res) {
 
     //console.log(updateFields.password);
 
+    if (userRole !== "admin" && role) {
+      return res.status(403).json({ error: "Unauthorized to update role" });
+    }
+
     const user = await users.update(
       {
         first_name,
         last_name,
         age,
         email,
-        role,
         password,
+        role,
       },
       {
         where: {
@@ -113,6 +118,7 @@ async function updateUser(req, res) {
         },
       }
     );
+
     const updatedUser = await users.findOne({
       where: { id: id },
     });

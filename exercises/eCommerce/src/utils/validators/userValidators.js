@@ -14,9 +14,10 @@ const createUserSchema = yup.object().shape({
     .string()
     .email("Invalid email format")
     .required("email is required"),
+  password: yup.string().required("password is required"),
   role: yup
     .string()
-    .oneOf(["admin", "customer"], "Role must be either 'admin' or 'user'")
+    .oneOf(["admin", "customer"], "Role must be either 'admin' or 'customer'")
     .required("Role is a required field"),
 });
 
@@ -33,7 +34,7 @@ const updateUserSchema = yup.object().shape({
   email: yup.string().email("Invalid email format").optional(),
   role: yup
     .string()
-    .oneOf(["admin", "user"], "Role must be either 'admin' or 'user'")
+    .oneOf(["admin", "customer"], "Role must be either 'admin' or 'customer'")
     .optional(),
 });
 
